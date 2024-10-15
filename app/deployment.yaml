@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: helloworld
+    app.kubernetes.io/component: helloworld
+    app.kubernetes.io/instance: helloworld
+    app.kubernetes.io/name: helloworld
+    app.kubernetes.io/part-of: helloworld-app
+    app.openshift.io/runtime: java
+    app.openshift.io/runtime-version: openjdk-17-ubi8
+  name: helloworld
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helloworld
+  template:
+    metadata:
+      labels:
+        app: helloworld
+    spec:
+      containers:
+        - name: helloworld
+          imagePullPolicy: Always
+          image: 'image-registry.openshift-image-registry.svc:5000/fabio-tassinari-dev/helloworld:latest'
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: '8080'
+              scheme: HTTP
+            initialDelaySeconds: 45
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+            - containerPort: 8443
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: '8080'
+              scheme: HTTP
+            initialDelaySeconds: 45
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
